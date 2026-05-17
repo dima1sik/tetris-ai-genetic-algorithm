@@ -39,6 +39,3 @@ It includes a playable / visual UI and automated tests for core game logic.
 
    pytest
 
-## Status
-
-Finished AI / game simulation project prepared for GitHub portfolio.
