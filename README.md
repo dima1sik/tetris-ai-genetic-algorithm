@@ -1,4 +1,4 @@
-# Tetris Evolution AI
+﻿# Tetris Evolution AI
 
 Tetris Evolution AI is a Python project where a genetic algorithm evolves strategies for playing Tetris.
 
@@ -43,10 +43,7 @@ requirements.txt
 2. Run the visual UI: python run_ui.py.
 3. Run tests: pytest.
 
-## Status
-
-Portfolio / AI and game simulation project.
-
 ## Notes
 
 This project focuses on genetic algorithms, simulation, and game-playing AI.
+
