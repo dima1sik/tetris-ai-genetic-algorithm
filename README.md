@@ -47,3 +47,17 @@ requirements.txt
 
 This project focuses on genetic algorithms, simulation, and game-playing AI.
 
+## Screenshots
+
+### Game UI
+![Game UI](screenshots/game-ui.png)
+
+### AI Playing
+![AI Playing](screenshots/ai-playing.png)
+
+### Simulation
+![Simulation](screenshots/simulation.png)
+
+### Results
+![Results](screenshots/results.png)
+
