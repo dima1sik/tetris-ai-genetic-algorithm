@@ -1,3 +1,6 @@
+import math
+from numbers import Real
+
 from core.piece import Piece
 from ai.features import extract_features
 
@@ -15,7 +18,12 @@ class Bot:
     }
 
     def __init__(self, weights=None):
-        self.weights = weights or self.DEFAULT_WEIGHTS
+        self.weights = dict(self.DEFAULT_WEIGHTS if weights is None else weights)
+        for feature, weight in self.weights.items():
+            if feature not in self.DEFAULT_WEIGHTS:
+                raise ValueError(f"Unknown feature weight: {feature}")
+            if isinstance(weight, bool) or not isinstance(weight, Real) or not math.isfinite(weight):
+                raise ValueError(f"Feature weight must be a finite number: {feature}")
         self.last_features = {}
         self.last_move = None
         self.last_score = 0
@@ -52,7 +60,7 @@ class Bot:
 
         return contributions[:3]
 
-    def find_best_move(self, board, piece):
+    def find_best_move(self, board, piece, start_y=0):
         best_move = None
         best_features = None
         best_score = None
@@ -61,7 +69,7 @@ class Bot:
             rotated_piece = Piece(piece.name, rotation_index)
 
             for x in range(-2, board.WIDTH + 2):
-                simulated_board, lines_cleared = board.simulate_place(rotated_piece, x)
+                simulated_board, lines_cleared = board.simulate_place(rotated_piece, x, start_y)
 
                 if simulated_board is None:
                     continue

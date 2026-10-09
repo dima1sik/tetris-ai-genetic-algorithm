@@ -41,14 +41,16 @@ class Board:
         return y
 
     def place_piece(self, piece, piece_x, piece_y):
+        if not self.can_place(piece, piece_x, piece_y):
+            raise ValueError("Piece placement overlaps occupied cells or leaves the board")
+
         cell_value = piece.get_cell_value()
 
         for block_x, block_y in piece.get_blocks():
             x = piece_x + block_x
             y = piece_y + block_y
 
-            if 0 <= x < self.WIDTH and 0 <= y < self.HEIGHT:
-                self.grid[y][x] = cell_value
+            self.grid[y][x] = cell_value
 
     def simulate_place(self, piece, piece_x, start_y=0):
         simulated_board = self.copy()

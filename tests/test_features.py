@@ -30,3 +30,17 @@ def test_hole_detection():
     features = extract_features(board)
 
     assert features["holes"] == 1
+
+
+def test_feature_values_include_boundaries_and_well_depths():
+    features = extract_features([[0, 1, 0], [1, 0, 1]], lines_cleared=2)
+    assert features == {
+        "holes": 1,
+        "aggregate_height": 4,
+        "max_height": 2,
+        "bumpiness": 2,
+        "lines_cleared": 2,
+        "well_sums": 2,
+        "row_transitions": 6,
+        "column_transitions": 6,
+    }
