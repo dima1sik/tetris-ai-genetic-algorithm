@@ -5,8 +5,7 @@ import pygame
 from ai.bot import Bot
 from audit.logger import AuditLogger
 from core.game import Game
-from ga.operators import crossover, mutate, tournament_selection
-from ga.population import create_initial_population
+from ga.population import create_initial_population, evolve_population
 from ga.storage import load_genome
 from ui.panels import InfoPanel
 from ui.renderer import BoardRenderer
@@ -42,7 +41,8 @@ def load_bot_weights():
     try:
         genome = load_genome()
         return genome["weights"], "trained genome"
-    except FileNotFoundError:
+    except (OSError, ValueError) as error:
+        print(f"Using default weights: {error}")
         return Bot.DEFAULT_WEIGHTS, "default weights"
 
 
@@ -321,39 +321,17 @@ def create_next_train_generation(train_state, recent_logs, audit_logger):
     for agent in train_state["agents"]:
         agent["genome"].set_fitness(agent["fitness"])
 
-    sorted_population = sorted(
+    rng = train_state["rng"]
+    new_population = evolve_population(
         old_population,
-        key=lambda genome: genome.get_fitness(),
-        reverse=True,
+        tournament_size=TRAIN_UI_TOURNAMENT_SIZE,
+        mutation_rate=TRAIN_UI_MUTATION_RATE,
+        mutation_strength=TRAIN_UI_MUTATION_STRENGTH,
+        rng=rng,
     )
 
-    rng = train_state["rng"]
-    new_population = [sorted_population[0].copy()]
-
-    while len(new_population) < TRAIN_UI_POPULATION_SIZE:
-        parent_a = tournament_selection(
-            old_population,
-            tournament_size=TRAIN_UI_TOURNAMENT_SIZE,
-            rng=rng,
-        )
-        parent_b = tournament_selection(
-            old_population,
-            tournament_size=TRAIN_UI_TOURNAMENT_SIZE,
-            rng=rng,
-        )
-
-        child = crossover(parent_a, parent_b, rng=rng)
-        child = mutate(
-            child,
-            mutation_rate=TRAIN_UI_MUTATION_RATE,
-            mutation_strength=TRAIN_UI_MUTATION_STRENGTH,
-            rng=rng,
-        )
-
-        new_population.append(child)
-
     new_generation = train_state["generation"] + 1
-    game_seed = TRAIN_UI_GAME_SEED + new_generation
+    game_seed = TRAIN_UI_GAME_SEED
 
     new_state = {
         "rng": rng,
@@ -385,7 +363,7 @@ def create_next_train_generation(train_state, recent_logs, audit_logger):
     return new_state
 
 
-def main():
+def run_ui():
     pygame.init()
 
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -794,7 +772,11 @@ def main():
         pygame.display.flip()
         clock.tick(FPS)
 
-    pygame.quit()
+def main():
+    try:
+        run_ui()
+    finally:
+        pygame.quit()
 
 
 if __name__ == "__main__":

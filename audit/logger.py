@@ -1,16 +1,19 @@
 import json
-import os
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+DEFAULT_AUDIT_PATH = Path(__file__).resolve().parents[1] / "audit" / "audit_log.jsonl"
 
 
 class AuditLogger:
-    def __init__(self, path="audit/audit_log.jsonl"):
-        self.path = path
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+    def __init__(self, path=DEFAULT_AUDIT_PATH):
+        self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
 
     def log_event(self, event_type, data):
         entry = {
-            "timestamp": datetime.now().isoformat(timespec="seconds"),
+            "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "event_type": event_type,
             "data": data,
         }

@@ -2,17 +2,7 @@ from pathlib import Path
 
 import pygame
 
-
-FEATURE_NAMES = [
-    "holes",
-    "aggregate_height",
-    "max_height",
-    "bumpiness",
-    "lines_cleared",
-    "well_sums",
-    "row_transitions",
-    "column_transitions",
-]
+from ga.genome import FEATURE_NAMES
 
 
 class InfoPanel:
@@ -86,9 +76,7 @@ class InfoPanel:
 
     def load_logo(self):
         possible_paths = [
-            Path("assets/UWB_logo.png"),
-            Path("assets/uwb_logo.png"),
-            Path("assets/UWB_logo.svg"),
+            Path(__file__).resolve().parents[1] / "assets" / "UWB_logo.png",
         ]
 
         for path in possible_paths:
@@ -411,7 +399,7 @@ class InfoPanel:
                 ("Generation", f"{train_state['generation']} / {train_state['max_generations']}"),
                 ("Population", ui_state["train_population_size"]),
                 ("Max moves", ui_state["train_max_moves"]),
-                ("Best fitness", train_state["best_fitness"] or "running"),
+                ("Best fitness", train_state["best_fitness"] if train_state["best_fitness"] is not None else "running"),
                 ("Finished", sum(1 for agent in train_state["agents"] if agent["finished"])),
             ]
         else:
@@ -723,7 +711,7 @@ class InfoPanel:
 
         header = (
             f"Generation {train_state['generation']} / {train_state['max_generations']} | "
-            f"Best fitness: {train_state['best_fitness'] or 'running'}"
+            f"Best fitness: {train_state['best_fitness'] if train_state['best_fitness'] is not None else 'running'}"
         )
 
         self.draw_text(surface, header, content_x, content_y, self.font_tiny, self.muted_color)

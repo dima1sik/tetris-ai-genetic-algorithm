@@ -19,15 +19,19 @@ class Bot:
 
     def __init__(self, weights=None):
         self.weights = dict(self.DEFAULT_WEIGHTS if weights is None else weights)
-        for feature, weight in self.weights.items():
-            if feature not in self.DEFAULT_WEIGHTS:
-                raise ValueError(f"Unknown feature weight: {feature}")
-            if isinstance(weight, bool) or not isinstance(weight, Real) or not math.isfinite(weight):
-                raise ValueError(f"Feature weight must be a finite number: {feature}")
+        self.validate_weights(self.weights)
         self.last_features = {}
         self.last_move = None
         self.last_score = 0
         self.last_reasons = []
+
+    @classmethod
+    def validate_weights(cls, weights):
+        for feature, weight in weights.items():
+            if feature not in cls.DEFAULT_WEIGHTS:
+                raise ValueError(f"Unknown feature weight: {feature}")
+            if isinstance(weight, bool) or not isinstance(weight, Real) or not math.isfinite(weight):
+                raise ValueError(f"Feature weight must be a finite number: {feature}")
 
     def evaluate_board(self, features):
         score = 0
