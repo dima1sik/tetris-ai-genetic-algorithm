@@ -18,7 +18,7 @@ class Genome:
         if weights is None:
             self.weights = {}
         else:
-            self.weights = weights
+            self.weights = dict(weights)
 
         self.fitness = None
 

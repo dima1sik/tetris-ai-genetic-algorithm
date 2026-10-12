@@ -117,12 +117,24 @@ class Game:
 
     def apply_bot_move(self, move):
         if self.game_over or move is None:
-            return
+            return False
 
-        self.current_piece = Piece(
+        if move.get("piece", self.current_piece.name) != self.current_piece.name:
+            raise ValueError("Bot move belongs to a different piece")
+        if not isinstance(move.get("rotation_index"), int) or not isinstance(move.get("x"), int):
+            raise ValueError("Bot move must contain an integer rotation_index and x")
+
+        rotated_piece = Piece(
             self.current_piece.name,
             move["rotation_index"]
         )
-        self.current_x = move["x"]
+        drop_y = self.board.get_drop_y(rotated_piece, move["x"], self.current_y)
+        if drop_y is None:
+            raise ValueError("Bot move cannot be placed from the current height")
 
-        self.hard_drop()
+        self.current_piece = rotated_piece
+        self.current_x = move["x"]
+        self.current_y = drop_y
+
+        self.lock_piece()
+        return True

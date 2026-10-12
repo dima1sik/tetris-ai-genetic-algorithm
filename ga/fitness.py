@@ -7,6 +7,9 @@ from data.seeds import TRAIN_SEEDS
 def calculate_fitness(weights, seeds=None, max_moves=500):
     if seeds is None:
         seeds = TRAIN_SEEDS
+    seeds = list(seeds)
+    if not seeds:
+        raise ValueError("At least one evaluation seed is required")
 
     results = []
 

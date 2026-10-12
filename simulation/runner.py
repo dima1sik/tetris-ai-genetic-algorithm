@@ -3,6 +3,9 @@ from ai.bot import Bot
 
 
 def run_bot_game(seed=42, weights=None, max_moves=500, audit_logger=None):
+    if not isinstance(max_moves, int) or max_moves <= 0:
+        raise ValueError("max_moves must be a positive integer")
+
     game = Game(seed=seed)
     bot = Bot(weights=weights)
 
